@@ -8,8 +8,34 @@ namespace CSharp2Sql {
 
         public SqlConnection connection { get; set; }
 
-        public void ExecSelect() {
-            var sql = "SELECT * From Student;";
+        public void SelectAllClasses() {
+            var sql = "SELECT * From Class;";
+            var cmd = new SqlCommand(sql, connection);
+            var reader = cmd.ExecuteReader();
+            while(reader.Read()) {
+                var id = Convert.ToInt32(reader["Id"]);
+                var subject = reader["Subject"].ToString();
+                var section = reader["Section"].ToString();
+                Console.WriteLine($"id={id}|{subject} {section}");
+            }
+            reader.Close();
+        }
+
+        public void SelectAllMajors() {
+            var sql2 = "SELECT * From Major;";
+            var cmd2 = new SqlCommand(sql2, connection);
+            var reader = cmd2.ExecuteReader();
+            while(reader.Read()) {
+                var id = Convert.ToInt32(reader["Id"]);
+                var desc = reader["Description"].ToString();
+                var minsat = Convert.ToInt32(reader["MinSAT"]);
+                Console.WriteLine($"{id}|{desc}|{minsat}");
+            }
+            reader.Close();
+        }
+
+        public void SelectAllStudents() {
+            var sql = "SELECT * From Student where id < 5;";
             var cmd = new SqlCommand(sql, connection);
             var reader = cmd.ExecuteReader();
             while(reader.Read()) {
