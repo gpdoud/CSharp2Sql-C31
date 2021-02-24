@@ -8,6 +8,11 @@ namespace CSharp2Sql {
     
     public class StudentsController {
 
+        /// <summary>
+        /// This contains the SqlConnection that every 
+        /// class will need. It must be passed to the
+        /// constructor of with controller.
+        /// </summary>
         private Connection connection { get; set; }
 
         public bool RemoveRange(params int[] ids) {
@@ -45,9 +50,6 @@ namespace CSharp2Sql {
         }
 
         public bool Create(Student student) {
-            var sql1 = "INSERT Into Student " +
-                         " (Firstname, Lastname, StateCode, SAT, GPA) VALUES " +
-                         " (@firstname, @lastname, @statecode, @sat, @gpa); ";
             var sql = $"INSERT into Student " +
                         " (Firstname, Lastname, StateCode, SAT, GPA) " +
                         $" VALUES ('{student.Firstname}', '{student.Lastname}', " +
@@ -63,6 +65,7 @@ namespace CSharp2Sql {
             var reader = cmd.ExecuteReader();
             var hasRow = reader.Read();
             if(!hasRow) {
+                reader.Close();
                 return null;
             }
             var student = new Student();
