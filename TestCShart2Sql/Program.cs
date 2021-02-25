@@ -1,6 +1,7 @@
 ﻿using CSharp2Sql;
 
 using System;
+using System.Linq;
 
 namespace TestCShart2Sql {
     class Program {
@@ -9,25 +10,46 @@ namespace TestCShart2Sql {
             var conn = new Connection();
             conn.Connect("EdDb");
 
-            var majorsController = new MajorsController(conn);
+            var sctrl = new StudentsController(conn);
+            var students = sctrl.GetAll();
 
-            var major = new Major { Code = "BAR", Description = "Bar Critic", MinSAT = 800 };
-            var rc = majorsController.Create(major);
-            Console.WriteLine($"Create Worked - {rc}");
-            major.Id = 15;
-            major.Description = "Advanced Bar Critic";
-            major.MinSAT = 1590;
-            rc = majorsController.Change(major);
-            Console.WriteLine($"Changed Worked - {rc}");
-            major = majorsController.GetByPK(major.Id);
-            Console.WriteLine($"GetByPK Worked - {major != null}");
-            var majors = majorsController.GetAll();
-            foreach(var m in majors) {
-                Console.WriteLine($"{m.Id}|{m.Description}|{m.MinSAT}");
+            var mctrl = new MajorsController(conn);
+            var majors = mctrl.GetAll();
+
+            var sm = from s in students
+                     join m in majors
+                     on s.MajorId equals m.Id
+                     select new {
+                         s.Id, Name = s.Firstname + " " + s.Lastname, Major = m.Description
+                     };
+
+            foreach(var s in sm) {
+                Console.WriteLine($"{s.Id} | {s.Name} | {s.Major}");
             }
-            rc = majorsController.Remove(major.Id);
-            Console.WriteLine($"Remove Worked - {rc}");
 
+
+            conn.Disconnect();
+
+            #region MajorsController
+            //var majorsController = new MajorsController(conn);
+
+            //var major = new Major { Code = "BAR", Description = "Bar Critic", MinSAT = 800 };
+            //var rc = majorsController.Create(major);
+            //Console.WriteLine($"Create Worked - {rc}");
+            //major.Id = 15;
+            //major.Description = "Advanced Bar Critic";
+            //major.MinSAT = 1590;
+            //rc = majorsController.Change(major);
+            //Console.WriteLine($"Changed Worked - {rc}");
+            //major = majorsController.GetByPK(major.Id);
+            //Console.WriteLine($"GetByPK Worked - {major != null}");
+            //var majors = majorsController.GetAll();
+            //foreach(var m in majors) {
+            //    Console.WriteLine($"{m.Id}|{m.Description}|{m.MinSAT}");
+            //}
+            //rc = majorsController.Remove(major.Id);
+            //Console.WriteLine($"Remove Worked - {rc}");
+            #endregion
             #region StudentsController Testing
             //var studentController = new StudentsController(conn);
 
@@ -55,7 +77,6 @@ namespace TestCShart2Sql {
 
             #endregion
 
-            conn.Disconnect();
         }
     }
 }

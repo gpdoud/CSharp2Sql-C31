@@ -84,9 +84,7 @@ namespace CSharp2Sql {
         }
 
         public List<Student> GetAll() {
-            var sql = "SELECT * From Student s " +
-                        " left join Major m on s.MajorId = m.Id " +
-                        " order by s.Lastname;";
+            var sql = "SELECT * From Student";
             var cmd = new SqlCommand(sql, connection.sqlconnection);
             var reader = cmd.ExecuteReader();
             var students = new List<Student>();
@@ -98,9 +96,9 @@ namespace CSharp2Sql {
                 student.StateCode = reader["StateCode"].ToString();
                 student.SAT = Convert.ToInt32(reader["SAT"]);
                 student.GPA = Convert.ToDecimal(reader["GPA"]);
-                student.Major = null;
-                if(reader["Description"] != System.DBNull.Value) {
-                    student.Major = reader["Description"].ToString();
+                student.MajorId = null;
+                if(reader["MajorId"] != System.DBNull.Value) {
+                    student.MajorId = Convert.ToInt32(reader["MajorId"]);
                 }
                 students.Add(student);
             }
